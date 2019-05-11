@@ -102,35 +102,37 @@ def handle_photo():
     date_list = []
     for i in range(len(file_list)):
         filename = file_list[i]
+        print(str(i) + '...' +filename)
         date_str, info = filename.split("_")
         info, _ = info.split(".")
         date = datetime.strptime(date_str, "%Y-%m-%d")
         year_month = '-'.join(date_str.split('-')[0:2])
+        year_str = '-'.join(date_str.split('-')[0:1])
         if i == 0:  # 处理第一个文件
-            new_dict = {"date": year_month, "arr": {'year': date.year,
+            new_dict = {"date": year_str, "arr": {'year': date.year,
                                                     'month': date.month,
                                                     'link': [filename],
                                                     'text': [info],
                                                     'type': ['image']
                                                     }
                         }
-            date_list.append(date)
+            date_list.append(date.year)
             list_info.append(new_dict)
-        elif date in date_list:  # 是同一个日期,找到在 Date 数组中的索引
-            index = date_list.index(date)
+        elif date.year in date_list:  # 是同一个日期,找到在 Date 数组中的索引
+            index = date_list.index(date.year)
             list_info[index]['arr']['link'].append(filename)
             list_info[index]['arr']['text'].append(info)
             list_info[index]['arr']['type'].append('image')
             
         else:  # 不是同一个日期创建一个新的 dict
-            new_dict = {"date": year_month, "arr":{'year': date.year,
+            new_dict = {"date": year_str, "arr":{'year': date.year,
                                                    'month': date.month,
                                                    'link': [filename],
                                                    'text': [info],
                                                    'type': ['image']
                                                    }
                         }
-            date_list.append(date)
+            date_list.append(date.year)
             list_info.append(new_dict)
 
     list_info = SortDict(list_info)
@@ -143,8 +145,8 @@ def handle_photo():
 def SortDict(list_info):
     for num in range(len(list_info)-1,0,-1):
         for i in range(num):
-            date1 = datetime.strptime(list_info[i]['date'],"%Y-%m")
-            date2 = datetime.strptime(list_info[i+1]['date'],"%Y-%m")
+            date1 = datetime.strptime(list_info[i]['date'],"%Y")
+            date2 = datetime.strptime(list_info[i+1]['date'],"%Y")
             if date1 < date2:
                 temp = list_info[i]
                 list_info[i] = list_info[i+1]
